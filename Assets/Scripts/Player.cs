@@ -46,22 +46,15 @@ public class Player : MonoBehaviour
 
         if (Input.GetMouseButton(0) && currentClickInterval == 0) 
         {   
-            Debug.Log("Mouse1");
-            //var pos = Input.mousePosition;
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pos.z = 1;
             pos.x = (int) pos.x;
             pos.y = (int) pos.y;
             destination = GridCalculatoor.GetGridPos(pos);
-            // var trf = transform;
-            // trf.position = destination;
             Destroy(currentCursor);
             currentCursor = Instantiate(cursorPrefab, transform);
             currentCursor.transform.parent = null;
             currentCursor.transform.position = destination;
-            //var gridMap = pos / 4;
-            // Debug.Log(gridMap);
-            Debug.Log(destination);
             currentClickInterval++;
         }
         if (Input.GetMouseButton(1)) 
