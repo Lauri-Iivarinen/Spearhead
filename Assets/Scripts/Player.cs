@@ -13,24 +13,15 @@ public class Player : MonoBehaviour
 
     public Vector3 destination = new Vector3();
     
-    double GetGridPos( float a )
-    {
-	if (a > 0) {
-	    return Math.Ceiling(a);
-	}
-	return Math.Floor(a);
-    }
+    [SerializeField]
+    private GameObject cursorPrefab;
 
+    private GameObject currentCursor;
     
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Game start");
-	Debug.Log(transform.position / 4);
-	double a = GetGridPos(0f);
-	Debug.Log("0 " + a);
-	double b = GetGridPos(-0.1f);
-	Debug.Log("-0.1 " + b);
+
     }
 
     void checkMovement()
@@ -61,10 +52,16 @@ public class Player : MonoBehaviour
             pos.z = 1;
             pos.x = (int) pos.x;
             pos.y = (int) pos.y;
-            destination = pos;
-	    var gridMap = pos / 4;
-	    Debug.Log(gridMap);
-	    Debug.Log(destination);
+            destination = GridCalculatoor.GetGridPos(pos);
+            // var trf = transform;
+            // trf.position = destination;
+            Destroy(currentCursor);
+            currentCursor = Instantiate(cursorPrefab, transform);
+            currentCursor.transform.parent = null;
+            currentCursor.transform.position = destination;
+            //var gridMap = pos / 4;
+            // Debug.Log(gridMap);
+            Debug.Log(destination);
             currentClickInterval++;
         }
         if (Input.GetMouseButton(1)) 
