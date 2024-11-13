@@ -19,6 +19,12 @@ public class GridCalculatoor
         return a * GRIDSIZE + GRIDSIZE/2;
     }
 
+    public static Vector3 GetWorldPosFromGrid(Vector3 gridpos){
+        gridpos.x = CenterPos(gridpos.x);
+        gridpos.y = CenterPos(gridpos.y);
+        return gridpos;
+    }
+
     public static Vector3 GetGridPos( Vector3 pos )
     {
         // Divide pos by 4 to get smaller grid pos
@@ -29,8 +35,7 @@ public class GridCalculatoor
         gridpos.y = RoundFloat(gridpos.y);
         Debug.Log("" + gridpos);
         // center on this grid
-        gridpos.x = CenterPos(gridpos.x);
-        gridpos.y = CenterPos(gridpos.y);
+
         
         return gridpos;
     }

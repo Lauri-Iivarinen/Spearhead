@@ -17,11 +17,13 @@ public class Player : MonoBehaviour
     private GameObject cursorPrefab;
 
     private GameObject currentCursor;
-    
+
+    private Pathfinder pathfinder;
+
     // Start is called before the first frame update
     void Start()
     {
-
+        pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
     }
 
     void checkMovement()
@@ -50,11 +52,12 @@ public class Player : MonoBehaviour
             pos.z = 1;
             pos.x = (int) pos.x;
             pos.y = (int) pos.y;
-            destination = GridCalculatoor.GetGridPos(pos);
+            destination = GridCalculatoor.GetWorldPosFromGrid(GridCalculatoor.GetGridPos(pos));
             Destroy(currentCursor);
             currentCursor = Instantiate(cursorPrefab, transform);
             currentCursor.transform.parent = null;
             currentCursor.transform.position = destination;
+            int path = pathfinder.DoPathfinding(GridCalculatoor.GetGridPos(transform.position), GridCalculatoor.GetGridPos(pos));
             currentClickInterval++;
         }
         if (Input.GetMouseButton(1)) 
