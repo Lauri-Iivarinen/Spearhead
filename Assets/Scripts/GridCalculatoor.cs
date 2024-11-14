@@ -33,7 +33,7 @@ public class GridCalculatoor
         // Round pos to get actual pos
         gridpos.x = RoundFloat(gridpos.x);
         gridpos.y = RoundFloat(gridpos.y);
-        Debug.Log("" + gridpos);
+        // Debug.Log("" + gridpos);
         // center on this grid
 
         
