@@ -16,7 +16,9 @@ public class Player : MonoBehaviour
     public Vector3 waypointDestination = new Vector3();
     
     [SerializeField]
-    private GameObject cursorPrefab;
+    private GameObject cursorOKPrefab;
+    [SerializeField]
+    private GameObject cursorNOPrefab;
 
     private GameObject currentCursor;
 
@@ -62,12 +64,14 @@ public class Player : MonoBehaviour
         if (Input.GetMouseButton(0) && currentClickInterval == 0) 
         {   
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            pos.z = 1;
+            pos.z = 0;
             pos.x = (int) pos.x;
             pos.y = (int) pos.y;
             destination = GridCalculatoor.GetWorldPosFromGrid(GridCalculatoor.GetGridPos(pos));
+
             Destroy(currentCursor);
-            currentCursor = Instantiate(cursorPrefab, transform);
+            if (!Physics2D.OverlapCircle(destination, 6f, collisionLayer)) currentCursor = Instantiate(cursorOKPrefab, transform);
+            else currentCursor = Instantiate(cursorNOPrefab, transform);
             currentCursor.transform.parent = null;
             currentCursor.transform.position = destination;
 

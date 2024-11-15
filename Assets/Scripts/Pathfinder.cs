@@ -56,7 +56,7 @@ public class Pathfinder : MonoBehaviour
                 //TODO: find out if area playable
                 //Get real world values for x and y
                 Vector3 worldPoint = GridCalculatoor.GetWorldPosFromGrid(pos);
-                bool walkable = !(Physics2D.OverlapCircle(worldPoint, 8f, collisionLayer)); //TODO Change 10 to be configured
+                bool walkable = !Physics2D.OverlapCircle(worldPoint, 6f, collisionLayer); //TODO Change 10 to be configured
                 Debug.Log(worldPoint + " " + walkable);
                 Node node = new Node(pos, walkable, ConvertToGrid(x, WORLDSIZE_X), ConvertToGrid(y, WORLDSIZE_Y));
                 // Debug.Log(ConvertToGrid(x, WORLDSIZE_X) + " - " + ConvertToGrid(y, WORLDSIZE_Y));
