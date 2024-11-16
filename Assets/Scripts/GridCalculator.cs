@@ -14,11 +14,13 @@ public class GridCalculator
 	    return (float) Math.Floor(a);
     }
 
+    //Centers position in the middle of current gridPos
     public static float CenterPos (float a) {
         if (a >= 0) return a * GRIDSIZE - GRIDSIZE/2;
         return a * GRIDSIZE + GRIDSIZE/2;
     }
 
+    // Convert grid pos to position in the play world
     public static Vector3 GetWorldPosFromGrid(Vector3 gridpos){
         gridpos.x = CenterPos(gridpos.x);
         gridpos.y = CenterPos(gridpos.y);
@@ -27,16 +29,11 @@ public class GridCalculator
 
     public static Vector3 GetGridPos( Vector3 pos )
     {
-        // Divide pos by 4 to get smaller grid pos
         Vector3 gridpos = pos / GRIDSIZE;
         
         // Round pos to get actual pos
         gridpos.x = RoundFloat(gridpos.x);
         gridpos.y = RoundFloat(gridpos.y);
-        // Debug.Log("" + gridpos);
-        // center on this grid
-
-        
         return gridpos;
     }
 

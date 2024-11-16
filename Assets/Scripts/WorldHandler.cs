@@ -17,6 +17,7 @@ public class WorldHandler
         }
     }
 
+    //Startworld, TODO: Create map of all smaller maps
     public static string[,] worldMap = {
         {""             ,"Level_ind_2"  ,"Level_ind_3"  },
         {"Level_ind_4"  ,"Level_ind_5"  ,""             },

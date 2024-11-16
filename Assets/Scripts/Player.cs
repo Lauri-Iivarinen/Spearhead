@@ -7,13 +7,13 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    public int count = 0;
+    // Reduces amount of clicks player can do, mby reduces load idk
     public int currentClickInterval = 0;
     public const int CLICKINTERVAL = 60;
-    public LayerMask collisionLayer;
-    public Vector3 destination = new Vector3(); //Final destination
+    public LayerMask collisionLayer; //Player cant enter collisionLayer objects
+    public Vector3 destination = new Vector3(); //Final destination of mouse click
     public List<Pathfinder.Node> pathToDestination = new List<Pathfinder.Node>();
-    public Vector3 waypointDestination = new Vector3();
+    public Vector3 waypointDestination = new Vector3(); //Current index of pathfinding nodes
     [SerializeField]
     private GameObject cursorOKPrefab;
     [SerializeField]
@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
     }
 
+    //Check if player is on edge of the map and loads the next area if possible
     void CheckBorderContact(){
         Vector3 gridPos = GridCalculator.GetGridPos(transform.position);
         string nextWorld = "";
@@ -59,6 +60,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //Check if player has destination to move to and does single iteration of movement toward the goal
     void checkMovement()
     {   
         if (pathToDestination.Count == 0) {
@@ -87,7 +89,6 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {   
-
         if (Input.GetMouseButton(0) && currentClickInterval == 0) 
         {   
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -97,7 +98,6 @@ public class Player : MonoBehaviour
             destination = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(pos));
 
             Destroy(currentCursor);
-
             List<Pathfinder.Node> path = pathfinder.DoPathfinding(GridCalculator.GetGridPos(transform.position), GridCalculator.GetGridPos(pos));
             if (path.Count > 0) {
                 currentCursor = Instantiate(cursorOKPrefab, transform);
@@ -119,7 +119,5 @@ public class Player : MonoBehaviour
         if (currentClickInterval > 0) currentClickInterval++;
         if (currentClickInterval == CLICKINTERVAL) currentClickInterval = 0; 
         checkMovement();
-        // Debug.Log(count);
-        // count++;
     }
 }

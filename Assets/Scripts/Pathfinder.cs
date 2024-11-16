@@ -28,6 +28,7 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
+    //Play area divided into smaller grid
     public const int WORLDSIZE_X = 30;
     public const int WORLDSIZE_Y = 16;
     Node[,] worldGrid;
@@ -85,6 +86,7 @@ public class Pathfinder : MonoBehaviour
         return (float) Math.Sqrt(Math.Pow(width, 2) + Math.Pow(height, 2));
     }
 
+    /** Find optimal path to target */
     public List<Node> DoPathfinding(Vector3 currPos, Vector3 targetPos){
         //Check all nodes next to current
         //If better cost, do X
@@ -98,6 +100,7 @@ public class Pathfinder : MonoBehaviour
         catch (System.Exception)
         {
             Debug.Log("OOB");
+            return new List<Node>();
         }
 
         List<Node> open = new List<Node>();
@@ -112,11 +115,9 @@ public class Pathfinder : MonoBehaviour
             }
             open.Remove(current);
             closed.Add(current);
-
-            if (current == targetNode) {
-                //Path found
-                // Debug.Log("PATH");
-                // return new List<Node>();
+            
+            //Path found, find path by parents and return path
+            if (current == targetNode) {    
                 List<Node> path = new List<Node>();
                 Node cn = current;
                 while (cn != startNode) {
