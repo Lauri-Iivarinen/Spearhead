@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using Unity.VisualScripting;
 
-public class GridCalculatoor
+public class GridCalculator
 {
     public const int GRIDSIZE = 10;
     public static float RoundFloat(float a) { 

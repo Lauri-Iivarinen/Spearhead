@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-
     public int count = 0;
     public int currentClickInterval = 0;
     public const int CLICKINTERVAL = 60;
@@ -14,30 +14,57 @@ public class Player : MonoBehaviour
     public Vector3 destination = new Vector3(); //Final destination
     public List<Pathfinder.Node> pathToDestination = new List<Pathfinder.Node>();
     public Vector3 waypointDestination = new Vector3();
-    
     [SerializeField]
     private GameObject cursorOKPrefab;
     [SerializeField]
     private GameObject cursorNOPrefab;
-
     private GameObject currentCursor;
-
     private Pathfinder pathfinder;
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3 v_1 = new Vector3(2, 2, 0);
-        Vector3 v_2 = new Vector3(0, 4, 0);
-        
-        Debug.Log(v_1 - v_2);
-
+        transform.position = GridCalculator.GetWorldPosFromGrid(WorldHandler.playerGridPos);
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
+    }
+
+    void CheckBorderContact(){
+        Vector3 gridPos = GridCalculator.GetGridPos(transform.position);
+        string nextWorld = "";
+        int xMultiplier = 1;
+        int yMultiplier = 1;
+        if (gridPos.x == -15) {
+            xMultiplier = -1;
+            nextWorld = WorldHandler.ChangeWorld(-1, 0);
+        }
+        if( gridPos.x == 15) {
+            xMultiplier = -1;
+            nextWorld = WorldHandler.ChangeWorld(1, 0);
+        }
+        if (gridPos.y == -8) {
+            yMultiplier = -1;
+            nextWorld = WorldHandler.ChangeWorld(0, 1);
+        }
+        if (gridPos.y == 8) {
+            yMultiplier = -1;
+            nextWorld = WorldHandler.ChangeWorld(0, -1);
+        }
+        
+        if (nextWorld != "") {
+            WorldHandler.loadingNextWorld = true;
+            //Change to be on the opposite side
+            WorldHandler.playerGridPos = new Vector3(gridPos.x*xMultiplier, gridPos.y*yMultiplier, gridPos.z);
+            Debug.Log("LOADING NEW MAP " + nextWorld);
+            SceneManager.LoadSceneAsync(nextWorld);
+        }
     }
 
     void checkMovement()
     {   
-        if (pathToDestination.Count == 0) return;
+        if (pathToDestination.Count == 0) {
+            CheckBorderContact();
+            return;
+        }
         // Move from waypoint to waypoint
         int posX = (int) transform.position.x;
         int posY = (int) transform.position.y;
@@ -53,7 +80,7 @@ public class Player : MonoBehaviour
         if (transform.position.x == waypointDestination.x && transform.position.y == waypointDestination.y) {
             // Change waypoint
             pathToDestination.RemoveAt(0);
-            if (pathToDestination.Count > 0) waypointDestination = GridCalculatoor.GetWorldPosFromGrid(pathToDestination[0].pos);
+            if (pathToDestination.Count > 0) waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
         }
     }
 
@@ -67,21 +94,20 @@ public class Player : MonoBehaviour
             pos.z = 0;
             pos.x = (int) pos.x;
             pos.y = (int) pos.y;
-            destination = GridCalculatoor.GetWorldPosFromGrid(GridCalculatoor.GetGridPos(pos));
+            destination = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(pos));
 
             Destroy(currentCursor);
-            if (!Physics2D.OverlapCircle(destination, 6f, collisionLayer)) currentCursor = Instantiate(cursorOKPrefab, transform);
-            else currentCursor = Instantiate(cursorNOPrefab, transform);
+
+            List<Pathfinder.Node> path = pathfinder.DoPathfinding(GridCalculator.GetGridPos(transform.position), GridCalculator.GetGridPos(pos));
+            if (path.Count > 0) {
+                currentCursor = Instantiate(cursorOKPrefab, transform);
+                pathToDestination = path;
+                waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
+                WorldHandler.loadingNextWorld = false;
+            } else currentCursor = Instantiate(cursorNOPrefab, transform);
+
             currentCursor.transform.parent = null;
             currentCursor.transform.position = destination;
-
-            List<Pathfinder.Node> path = pathfinder.DoPathfinding(GridCalculatoor.GetGridPos(transform.position), GridCalculatoor.GetGridPos(pos));
-            if (path.Count > 0) {
-                pathToDestination = path;
-                waypointDestination = GridCalculatoor.GetWorldPosFromGrid(pathToDestination[0].pos);
-            }
-
-            // foreach (Pathfinder.Node node in pathToDestination) Debug.Log(node.pos + " - " + node.playable);
 
             currentClickInterval++;
         }
