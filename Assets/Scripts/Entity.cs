@@ -78,7 +78,7 @@ public class Entity : MonoBehaviour
             StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), 0.5f));
             
         }else {
-            transform.position = GridCalculator.GetWorldPosFromGrid(transform.position);
+            transform.position = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position));
         }
     }
 
