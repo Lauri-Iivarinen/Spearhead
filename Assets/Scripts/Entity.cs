@@ -8,13 +8,16 @@ public class Entity : MonoBehaviour
     public string entityName;
     public bool friendly;
     public float hp;
-    public float maxhp;
+    public float maxHp;
     public float damage;
     public int level;
+    public float aggroRange;
+    public LayerMask playerLayer;
     public bool isAlive{
         get { return hp > 0; }
     }
     public GameObject target; //TODO: Target can be chased
+    bool chaseTarget;
     public List<Vector3> patrolPath; //Detault path entity will follow, if none then stationary
 
     //List of nodes to the current path marked by patrolPath[currentIndex] or patrolDestination
@@ -24,13 +27,21 @@ public class Entity : MonoBehaviour
     public int currentPatrolIndex = 0; //Tracks patrol path
     Pathfinder pathfinder;
     bool patrolling = false; //Statoinary -> false
-
+    public bool stationary;
     public float speed = 0.5f; //Cant go lower than 0.5, maybe needs fixing in the future
     public float damageReductionMultiplier = 1f; // Higher -> take less dmg
 
-    void DoPatrolling(){
+    void DoPatrolling(){ //Follows patrol path OR chases player if aggroed
+        float timer = 2f;
+        if (chaseTarget) timer = 0f;
+
+        if (stationary && !chaseTarget) return;
+        if (chaseTarget && pathToDestination.Count < 2 ){
+            StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), timer));
+            return;
+        }
         // Move from waypoint to waypoint
-        float posX =  transform.position.x;
+        float posX = transform.position.x;
         float posY = transform.position.y;
         var pos = transform.position;
         if (posX != waypointDestination.x){
@@ -49,21 +60,22 @@ public class Entity : MonoBehaviour
                 //Change patrol waypoint
                 currentPatrolIndex++;
                 patrolling = false;
-                StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), 2f));
+                StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), timer));
             }
         }
     }
 
     void StartPatrollingIteration(){
-        if (currentPatrolIndex == patrolPath.Count){
+        if ( currentPatrolIndex == patrolPath.Count){
             currentPatrolIndex = 1;
             patrolPath.Reverse();
         }
         patrolDestination = patrolPath[currentPatrolIndex];
-        // Debug.Log(GridCalculator.GetGridPos(transform.position) + " -> " + patrolDestination);
+        if (chaseTarget) {
+            patrolDestination = GridCalculator.GetGridPos(target.transform.position);
+        }
         pathToDestination = pathfinder.DoPathfinding(GridCalculator.GetGridPos(transform.position), patrolDestination);
-        // Debug.Log(pathToDestination);
-        waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
+        if (pathToDestination.Count > 0) waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
         patrolling = true;
     }
 
@@ -77,11 +89,10 @@ public class Entity : MonoBehaviour
     void Start()
     {
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
-        if (patrolPath.Count > 0){
+        if (patrolPath.Count > 0 && !stationary){
             transform.position = GridCalculator.GetWorldPosFromGrid(patrolPath[0]);
             currentPatrolIndex++;
             StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), 0.5f));
-            
         }else {
             transform.position = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position));
         }
@@ -100,9 +111,24 @@ public class Entity : MonoBehaviour
         return diff;
     }
 
+    void CheckForPlayersInAggroRange()
+    {
+        // Debug.Log("Checking aggro");
+        Collider2D collider = Physics2D.OverlapCircle(transform.position, aggroRange, playerLayer);
+        if (collider) {
+            target = collider.gameObject;
+            chaseTarget = true;
+            patrolling = false;
+            // Player pl = target.GetComponent<Player>();
+        }
+
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
-        if ( isAlive && patrolling) DoPatrolling();
+        
+        if (!friendly && !chaseTarget) CheckForPlayersInAggroRange();
+        if (isAlive && (patrolling || chaseTarget)) DoPatrolling();
     }
 }

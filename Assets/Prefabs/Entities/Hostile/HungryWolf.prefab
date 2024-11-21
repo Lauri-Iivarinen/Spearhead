@@ -98,11 +98,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b517be6a7cdd9d4439ea317135f27419, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityName: Hungry Wolf
   friendly: 0
   hp: 20
-  maxhp: 20
+  maxHp: 0
   damage: 5
   level: 1
+  aggroRange: 10
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
   target: {fileID: 0}
   patrolPath: []
   patrolDestination: {x: 0, y: 0, z: 0}

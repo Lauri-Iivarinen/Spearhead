@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public const int CLICKINTERVAL = 30;
     public LayerMask entityLayer; //Mobs etc.
     public LayerMask collisionLayer; //Player cant enter collisionLayer objects
+    public LayerMask deathLayer;
     public Vector3 destination = new Vector3(); //Final destination of mouse click
     public List<Pathfinder.Node> pathToDestination = new List<Pathfinder.Node>();
     public Vector3 waypointDestination = new Vector3(); //Current index of pathfinding nodes
@@ -27,6 +28,15 @@ public class Player : MonoBehaviour
     bool isInteracting = false;
     int attackInterval = 60;
     int currentAttackInterval = 0;
+
+    
+    public float maxHp;
+    public float hp;
+    public bool alive {
+        get {
+            return hp > 0;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +85,7 @@ public class Player : MonoBehaviour
     }
 
     //Check if player has destination to move to and does single iteration of movement toward the goal
-    void checkMovement()
+    void CheckMovement()
     {   
         if (pathToDestination.Count == 0 || (pathToDestination.Count == 1 && chaseTarget)) {
             CheckBorderContact();
@@ -101,6 +111,21 @@ public class Player : MonoBehaviour
             if (pathToDestination.Count > 0) waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
         }
     }
+
+    void Die()
+    {
+        StartCoroutine(myWaitCoroutine(() => gameObject.layer = deathLayer, 1f));
+        // gameObject.layer = deathLayer;
+    }
+
+    public float TakeDamage(float dmg)
+    {
+        float diff = dmg/PlayerStats.damageReductionMultiplier;
+        hp -= diff;
+        if (hp <= 0) Die();
+        return diff;
+    }
+
     void MoveToTarget()
     {
         var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -191,7 +216,7 @@ public class Player : MonoBehaviour
 
     void CheckTargetInteraction()
     {
-        Debug.Log("Made it to Interact");
+        // Debug.Log("Made it to Interact");
         Vector3 playerGrid = GridCalculator.GetGridPos(transform.position);
         Vector3 targetGrid = GridCalculator.GetGridPos(target.transform.position);
         if (!IsWithinRange(playerGrid, targetGrid) && !IsWithinFarRange(playerGrid, targetGrid)) return;
@@ -225,6 +250,6 @@ public class Player : MonoBehaviour
         if (currentAttackInterval == attackInterval) currentAttackInterval = 0;
     
         if (target != null && chaseTarget) CheckTargetInteraction();
-        checkMovement();
+        CheckMovement();
     }
 }

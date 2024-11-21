@@ -13,6 +13,6 @@ public class PlayerStats
     }
     public static float maxHp = 50f;
     public static float hp = maxHp;
-    
+    public static float damageReductionMultiplier = 1f;
 
 }
