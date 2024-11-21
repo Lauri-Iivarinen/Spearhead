@@ -5,11 +5,15 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
+    public string entityName;
     public bool friendly;
     public float hp;
     public float maxhp;
     public float damage;
     public int level;
+    public bool isAlive{
+        get { return hp > 0; }
+    }
     public GameObject target; //TODO: Target can be chased
     public List<Vector3> patrolPath; //Detault path entity will follow, if none then stationary
 
@@ -22,6 +26,7 @@ public class Entity : MonoBehaviour
     bool patrolling = false; //Statoinary -> false
 
     public float speed = 0.5f; //Cant go lower than 0.5, maybe needs fixing in the future
+    public float damageReductionMultiplier = 1f; // Higher -> take less dmg
 
     void DoPatrolling(){
         // Move from waypoint to waypoint
@@ -82,9 +87,22 @@ public class Entity : MonoBehaviour
         }
     }
 
+    void EntityDies()
+    {
+        Debug.Log("DEAD");
+        StartCoroutine(myWaitCoroutine( () => Destroy(gameObject), 2f));
+    }
+
+    public float TakeDamage(float dmg){
+        float diff = dmg/damageReductionMultiplier;
+        hp -= diff;
+        if (hp <= 0) EntityDies();
+        return diff;
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (patrolling) DoPatrolling();
+        if ( isAlive && patrolling) DoPatrolling();
     }
 }

@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
 
     GameObject target;
     bool chaseTarget = false;
+    bool isInteracting = false;
+    int attackInterval = 60;
+    int currentAttackInterval = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -74,8 +77,7 @@ public class Player : MonoBehaviour
     //Check if player has destination to move to and does single iteration of movement toward the goal
     void checkMovement()
     {   
-        // Debug.Log(pathToDestination.Count);
-        if (pathToDestination.Count == 0) {
+        if (pathToDestination.Count == 0 || (pathToDestination.Count == 1 && chaseTarget)) {
             CheckBorderContact();
             return;
         }
@@ -149,7 +151,7 @@ public class Player : MonoBehaviour
 
     void PathfindToTarget()
     {   
-        if (!chaseTarget) return;
+        if (!chaseTarget || target == null) return;
         //Check if close enough, else chase
         Vector3 playerGrid = GridCalculator.GetGridPos(transform.position);
         Vector3 targetGrid = GridCalculator.GetGridPos(target.transform.position);
@@ -159,11 +161,46 @@ public class Player : MonoBehaviour
                 //Sheesh, debugged bad pathfinding from 22:30 to 01:20 do not touch lol
                 pathToDestination = path;
                 waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
+                //Player will stay stationary because its targeting its own location as the first step on path
                 if (waypointDestination == GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position))) {
                     pathToDestination.RemoveAt(0);
                     waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
                 }
             }
+            return;
+        }
+    }
+
+    // For future check if player has ranged attack and is withing range
+    bool IsWithinFarRange(Vector3 aPos, Vector3 bPos)
+    {
+        return false;
+    }
+
+    void AttackTarget(Entity e)
+    {   
+        if (currentAttackInterval != 0 ) return;
+        if (!e.isAlive) {
+            target = null;
+            return;
+        }
+        Debug.Log("Attack");
+        e.TakeDamage(PlayerStats.damage);
+        currentAttackInterval++;
+    }
+
+    void CheckTargetInteraction()
+    {
+        Debug.Log("Made it to Interact");
+        Vector3 playerGrid = GridCalculator.GetGridPos(transform.position);
+        Vector3 targetGrid = GridCalculator.GetGridPos(target.transform.position);
+        if (!IsWithinRange(playerGrid, targetGrid) && !IsWithinFarRange(playerGrid, targetGrid)) return;
+        
+        Entity tg = target.GetComponent<Entity>();
+        if (tg.friendly && !isInteracting) {
+            Debug.Log("Interacting");
+        }else if (!tg.friendly) {
+            AttackTarget(tg);
         }
     }
 
@@ -172,17 +209,22 @@ public class Player : MonoBehaviour
     {   
         if (Input.GetMouseButton(0) && currentClickInterval == 0) 
         {   
+            target = null;
             chaseTarget = false;
             MoveToTarget();
         } else if (Input.GetMouseButton(1) && currentClickInterval == 0) 
         {   
+            target = null;
             chaseTarget = false;
             AquireTarget();
             MoveToTarget();
         } else if (currentClickInterval % 30 == 0) PathfindToTarget(); //No need to pathfind every frame
         if (currentClickInterval > 0) currentClickInterval++;
         if (currentClickInterval == CLICKINTERVAL) currentClickInterval = 0;
-        
+        if (currentAttackInterval > 0) currentAttackInterval++;
+        if (currentAttackInterval == attackInterval) currentAttackInterval = 0;
+    
+        if (target != null && chaseTarget) CheckTargetInteraction();
         checkMovement();
     }
 }
