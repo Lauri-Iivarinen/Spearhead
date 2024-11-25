@@ -5,7 +5,7 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 
-public class Player : MonoBehaviour
+public class Player : EntityGeneric
 {
     // Reduces amount of clicks player can do, mby reduces load idk
     public int currentClickInterval = 0;
@@ -43,12 +43,6 @@ public class Player : MonoBehaviour
     {
         transform.position = GridCalculator.GetWorldPosFromGrid(WorldHandler.playerGridPos);
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
-    }
-
-    IEnumerator myWaitCoroutine(Action func, float wait)
-    {
-        yield return new WaitForSeconds(wait);// Wait for one second
-        func();
     }
 
     //Check if player is on edge of the map and loads the next area if possible
@@ -118,11 +112,12 @@ public class Player : MonoBehaviour
         // gameObject.layer = deathLayer;
     }
 
-    public float TakeDamage(float dmg)
+    public float TakeDamage(float dmg, string _type = "hostile")
     {
         float diff = dmg/PlayerStats.damageReductionMultiplier;
         hp -= diff;
         if (hp <= 0) Die();
+        SpawnDamagePopup(diff, _type);
         return diff;
     }
 
@@ -163,17 +158,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    bool IsWithinRange(Vector3 aPos, Vector3 bPos)
-    {
-        if (aPos.x != bPos.x) {
-            return (aPos.x-1 == bPos.x || aPos.x+1 == bPos.x) && aPos.y == bPos.y;
-        }
-        if (aPos.y != bPos.y) {
-            return (aPos.y == bPos.y-1 || aPos.y == bPos.y+1) && aPos.x == bPos.x;
-        }
-        return false;
-    } 
-
     void PathfindToTarget()
     {   
         if (!chaseTarget || target == null) return;
@@ -194,12 +178,6 @@ public class Player : MonoBehaviour
             }
             return;
         }
-    }
-
-    // For future check if player has ranged attack and is withing range
-    bool IsWithinFarRange(Vector3 aPos, Vector3 bPos)
-    {
-        return false;
     }
 
     void AttackTarget(Entity e)

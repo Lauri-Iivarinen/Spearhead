@@ -1,22 +1,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Entity : MonoBehaviour
+public class Entity : EntityGeneric
 {
     public string entityName;
     public bool friendly;
     public float hp;
     public float maxHp;
     public float damage;
+    float currentAttackInterval = 0f;
+    public float attackInterval;
+    public float xpReward;
     public int level;
     public float aggroRange;
     public LayerMask playerLayer;
+    public LayerMask deathLayer;
     public bool isAlive{
         get { return hp > 0; }
     }
-    public GameObject target; //TODO: Target can be chased
+    GameObject target; //TODO: Target can be chased
     bool chaseTarget;
     public List<Vector3> patrolPath; //Detault path entity will follow, if none then stationary
 
@@ -30,6 +35,16 @@ public class Entity : MonoBehaviour
     public bool stationary;
     public float speed = 0.5f; //Cant go lower than 0.5, maybe needs fixing in the future
     public float damageReductionMultiplier = 1f; // Higher -> take less dmg
+
+    void AttackTarget()
+    {
+        if (currentAttackInterval != 0) return;
+        if (target == null) return;
+        Player pl = target.GetComponent<Player>();
+        if (pl == null) return;
+        pl.TakeDamage(damage);
+        currentAttackInterval++;
+    }
 
     void DoPatrolling(){ //Follows patrol path OR chases player if aggroed
         float timer = 2f;
@@ -70,6 +85,7 @@ public class Entity : MonoBehaviour
             currentPatrolIndex = 1;
             patrolPath.Reverse();
         }
+        if (patrolPath.Count == 1) currentPatrolIndex = 0;
         patrolDestination = patrolPath[currentPatrolIndex];
         if (chaseTarget) {
             patrolDestination = GridCalculator.GetGridPos(target.transform.position);
@@ -77,12 +93,6 @@ public class Entity : MonoBehaviour
         pathToDestination = pathfinder.DoPathfinding(GridCalculator.GetGridPos(transform.position), patrolDestination);
         if (pathToDestination.Count > 0) waypointDestination = GridCalculator.GetWorldPosFromGrid(pathToDestination[0].pos);
         patrolling = true;
-    }
-
-    IEnumerator myWaitCoroutine(Action func, float wait)
-    {
-        yield return new WaitForSeconds(wait);// Wait for one second
-        func();
     }
 
     // Start is called before the first frame update
@@ -104,10 +114,11 @@ public class Entity : MonoBehaviour
         StartCoroutine(myWaitCoroutine( () => Destroy(gameObject), 2f));
     }
 
-    public float TakeDamage(float dmg){
+    public float TakeDamage(float dmg, string type = "default"){
         float diff = dmg/damageReductionMultiplier;
         hp -= diff;
         if (hp <= 0) EntityDies();
+        SpawnDamagePopup(diff, type);
         return diff;
     }
 
@@ -127,8 +138,19 @@ public class Entity : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
+        //Will return to patrolling if current target is dead
+        // Does not work for stationary targets so stationary shouldnt be used for now
+        if (target && target.layer == deathLayer){
+            target = null;
+            chaseTarget = false;
+            patrolling = true;
+        }
         if (!friendly && !chaseTarget) CheckForPlayersInAggroRange();
         if (isAlive && (patrolling || chaseTarget)) DoPatrolling();
+        if (currentAttackInterval > 0){
+            currentAttackInterval++;
+            if (currentAttackInterval == attackInterval) currentAttackInterval = 0;
+        }
+        if (target != null && chaseTarget && IsWithinRange(GridCalculator.GetGridPos(transform.position), GridCalculator.GetGridPos(target.transform.position))) AttackTarget();
     }
 }
