@@ -6,6 +6,14 @@ using System;
 public class EntityGeneric : MonoBehaviour
 {
     public GameObject damagePopup;
+    public LayerMask deathLayer;
+    public float maxHp;
+    public float hp;
+    public bool isAlive {
+        get {
+            return hp > 0;
+        }
+    }
 
     public IEnumerator myWaitCoroutine(Action func, float wait)
     {
@@ -24,7 +32,7 @@ public class EntityGeneric : MonoBehaviour
         return aPos.x == bPos.x && aPos.y == bPos.y;
     }
 
-        // For future check if player has ranged attack and is withing range
+    // For future check if player has ranged attack and is withing range
     public bool IsWithinFarRange(Vector3 aPos, Vector3 bPos)
     {
         return false;

@@ -12,7 +12,6 @@ public class Player : EntityGeneric
     public const int CLICKINTERVAL = 30;
     public LayerMask entityLayer; //Mobs etc.
     public LayerMask collisionLayer; //Player cant enter collisionLayer objects
-    public LayerMask deathLayer;
     public Vector3 destination = new Vector3(); //Final destination of mouse click
     public List<Pathfinder.Node> pathToDestination = new List<Pathfinder.Node>();
     public Vector3 waypointDestination = new Vector3(); //Current index of pathfinding nodes
@@ -28,15 +27,6 @@ public class Player : EntityGeneric
     bool isInteracting = false;
     int attackInterval = 60;
     int currentAttackInterval = 0;
-
-    
-    public float maxHp;
-    public float hp;
-    public bool alive {
-        get {
-            return hp > 0;
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -108,8 +98,9 @@ public class Player : EntityGeneric
 
     void Die()
     {
-        StartCoroutine(myWaitCoroutine(() => gameObject.layer = deathLayer, 1f));
+        // StartCoroutine(myWaitCoroutine(() => gameObject.layer = deathLayer, 1f));
         // gameObject.layer = deathLayer;
+        Debug.Log("Player died");
     }
 
     public float TakeDamage(float dmg, string _type = "hostile")

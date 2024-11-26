@@ -1258,6 +1258,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4447940433588182888, guid: 464fb38d855e14bd5b63cefda78cc87a, type: 3}
+      propertyPath: hp
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447940433588182888, guid: 464fb38d855e14bd5b63cefda78cc87a, type: 3}
+      propertyPath: maxHp
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447940433588182888, guid: 464fb38d855e14bd5b63cefda78cc87a, type: 3}
+      propertyPath: deathLayer.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447940433588182888, guid: 464fb38d855e14bd5b63cefda78cc87a, type: 3}
       propertyPath: entityLayer.m_Bits
       value: 64
       objectReference: {fileID: 0}

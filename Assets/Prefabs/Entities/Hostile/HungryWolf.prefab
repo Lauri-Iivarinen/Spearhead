@@ -99,10 +99,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damagePopup: {fileID: 3371195135602263739, guid: 3fe5716815705c64288fa4ccfc1497a2, type: 3}
+  deathLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  maxHp: 20
+  hp: 20
   entityName: Hungry Wolf
   friendly: 0
-  hp: 20
-  maxHp: 0
   damage: 5
   attackInterval: 60
   xpReward: 0
@@ -111,9 +114,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
-  deathLayer:
-    serializedVersion: 2
-    m_Bits: 0
   patrolPath: []
   patrolDestination: {x: 0, y: 0, z: 0}
   currentPatrolIndex: 0

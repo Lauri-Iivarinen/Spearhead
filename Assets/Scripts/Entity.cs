@@ -8,8 +8,6 @@ public class Entity : EntityGeneric
 {
     public string entityName;
     public bool friendly;
-    public float hp;
-    public float maxHp;
     public float damage;
     float currentAttackInterval = 0f;
     public float attackInterval;
@@ -17,10 +15,6 @@ public class Entity : EntityGeneric
     public int level;
     public float aggroRange;
     public LayerMask playerLayer;
-    public LayerMask deathLayer;
-    public bool isAlive{
-        get { return hp > 0; }
-    }
     GameObject target; //TODO: Target can be chased
     bool chaseTarget;
     public List<Vector3> patrolPath; //Detault path entity will follow, if none then stationary
@@ -98,6 +92,9 @@ public class Entity : EntityGeneric
     // Start is called before the first frame update
     void Start()
     {
+        if (!WorldHandler.ChangeEntityStatus(gameObject)){
+            Destroy(gameObject);
+        }
         pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
         if (patrolPath.Count > 0 && !stationary){
             transform.position = GridCalculator.GetWorldPosFromGrid(patrolPath[0]);
@@ -106,12 +103,14 @@ public class Entity : EntityGeneric
         }else {
             transform.position = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position));
         }
+        
     }
 
     void EntityDies()
     {
         Debug.Log("DEAD");
         StartCoroutine(myWaitCoroutine( () => Destroy(gameObject), 2f));
+        WorldHandler.ChangeEntityStatus(gameObject, false);
     }
 
     public float TakeDamage(float dmg, string type = "default"){
@@ -138,6 +137,7 @@ public class Entity : EntityGeneric
     // Update is called once per frame
     void FixedUpdate()
     {
+        // if (gameObject.layer == deathLayer) return;
         //Will return to patrolling if current target is dead
         // Does not work for stationary targets so stationary shouldnt be used for now
         if (target && target.layer == deathLayer){

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerStats
 {
-    public static float baseDamage = 4f;
+    public static float baseDamage = 6f;
     public static float damageMultiplier = 1f;
     public static float damage {
         get {

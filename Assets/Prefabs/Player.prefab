@@ -99,6 +99,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damagePopup: {fileID: 3371195135602263739, guid: 3fe5716815705c64288fa4ccfc1497a2, type: 3}
+  deathLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  maxHp: 30
+  hp: 30
   currentClickInterval: 0
   entityLayer:
     serializedVersion: 2
@@ -106,15 +111,10 @@ MonoBehaviour:
   collisionLayer:
     serializedVersion: 2
     m_Bits: 8
-  deathLayer:
-    serializedVersion: 2
-    m_Bits: 0
   destination: {x: 0, y: 0, z: 0}
   waypointDestination: {x: 0, y: 0, z: 0}
   cursorOKPrefab: {fileID: 8548111332066895179, guid: 13b4023880397564082fc19f2ad501ee, type: 3}
   cursorNOPrefab: {fileID: 8548111332066895179, guid: 1099f29c41449f245afbf5d227fefa69, type: 3}
-  maxHp: 30
-  hp: 30
 --- !u!58 &-9144077962327059438
 CircleCollider2D:
   m_ObjectHideFlags: 0
