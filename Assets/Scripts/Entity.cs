@@ -29,6 +29,8 @@ public class Entity : EntityGeneric
     public bool stationary;
     public float speed = 0.5f; //Cant go lower than 0.5, maybe needs fixing in the future
     public float damageReductionMultiplier = 1f; // Higher -> take less dmg
+    RespawnHandler rp;
+    Vector3 respawnPosition;
 
     void AttackTarget()
     {
@@ -38,6 +40,21 @@ public class Entity : EntityGeneric
         if (pl == null) return;
         pl.TakeDamage(damage);
         currentAttackInterval++;
+    }
+
+    public void ResetEntity()
+    {
+        target = null;
+        chaseTarget = false;
+        transform.position = respawnPosition;
+        pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
+        if (patrolPath.Count > 0 && !stationary){
+            transform.position = GridCalculator.GetWorldPosFromGrid(patrolPath[0]);
+            currentPatrolIndex++;
+            StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), 0.5f));
+        }else {
+            transform.position = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position));
+        }
     }
 
     void DoPatrolling(){ //Follows patrol path OR chases player if aggroed
@@ -92,25 +109,29 @@ public class Entity : EntityGeneric
     // Start is called before the first frame update
     void Start()
     {
+        respawnPosition = transform.position;
+        
+        rp = GameObject.Find("RespawnHandler").GetComponent<RespawnHandler>();
         if (!WorldHandler.ChangeEntityStatus(gameObject)){
-            Destroy(gameObject);
-        }
-        pathfinder = GameObject.Find("Pathfinder").GetComponent<Pathfinder>();
-        if (patrolPath.Count > 0 && !stationary){
-            transform.position = GridCalculator.GetWorldPosFromGrid(patrolPath[0]);
-            currentPatrolIndex++;
-            StartCoroutine(myWaitCoroutine( () => StartPatrollingIteration(), 0.5f));
-        }else {
-            transform.position = GridCalculator.GetWorldPosFromGrid(GridCalculator.GetGridPos(transform.position));
+            DateTime dt = WorldHandler.GetTimeOfDeath(gameObject.name);
+            DateTime ct = DateTime.Now;
+            TimeSpan diff = ct-dt;
+            if (diff.TotalSeconds < respawnTimerSeconds){
+                rp.RespawnGameObject(gameObject, (float) (respawnTimerSeconds - diff.TotalSeconds));
+                gameObject.SetActive(false);
+                return;
+            }
         }
         
+        ResetEntity();
     }
 
     void EntityDies()
     {
         Debug.Log("DEAD");
-        StartCoroutine(myWaitCoroutine( () => Destroy(gameObject), 2f));
+        rp.RespawnGameObject(gameObject, (float) respawnTimerSeconds);
         WorldHandler.ChangeEntityStatus(gameObject, false);
+        StartCoroutine(myWaitCoroutine( () => gameObject.SetActive(false), 2f));
     }
 
     public float TakeDamage(float dmg, string type = "default"){
@@ -137,6 +158,7 @@ public class Entity : EntityGeneric
     // Update is called once per frame
     void FixedUpdate()
     {
+        if (!isAlive) return;
         // if (gameObject.layer == deathLayer) return;
         //Will return to patrolling if current target is dead
         // Does not work for stationary targets so stationary shouldnt be used for now

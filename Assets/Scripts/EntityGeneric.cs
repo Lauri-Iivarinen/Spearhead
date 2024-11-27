@@ -9,6 +9,7 @@ public class EntityGeneric : MonoBehaviour
     public LayerMask deathLayer;
     public float maxHp;
     public float hp;
+    public double respawnTimerSeconds;
     public bool isAlive {
         get {
             return hp > 0;
@@ -48,7 +49,6 @@ public class EntityGeneric : MonoBehaviour
         popup.transform.position = popupPos;
         DamagePopupHandler dph = popup.GetComponent<DamagePopupHandler>();
         dph.ChangeData(type, ""+((int) amount));
-        
     }
 
 

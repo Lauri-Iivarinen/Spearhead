@@ -5,6 +5,17 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 
+/*
+
+ISSUE TRACKER:
+- Stats scuffed
+- HP refreshes on map change
+- Grant xp
+- UI, hp bars, target, death menu
+- 
+
+*/
+
 public class Player : EntityGeneric
 {
     // Reduces amount of clicks player can do, mby reduces load idk
