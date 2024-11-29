@@ -137,7 +137,10 @@ public class Entity : EntityGeneric
     public float TakeDamage(float dmg, string type = "default"){
         float diff = dmg/damageReductionMultiplier;
         hp -= diff;
-        if (hp <= 0) EntityDies();
+        if (hp <= 0) {
+            hp = 0;
+            EntityDies();
+        }
         SpawnDamagePopup(diff, type);
         return diff;
     }

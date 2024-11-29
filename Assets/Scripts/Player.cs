@@ -8,17 +8,15 @@ using UnityEngine.SceneManagement;
 /*
 
 ISSUE TRACKER:
-- Stats scuffed
-- HP refreshes on map change
 - Grant xp
-- UI, hp bars, target, death menu
+- Friendly entity
 - 
 
 */
 
 public class Player : EntityGeneric
 {
-    // Reduces amount of clicks player can do, mby reduces load idk
+    // Reduces amount of clicks player can do, mby reduces load idk 
     public int currentClickInterval = 0;
     public const int CLICKINTERVAL = 30;
     public LayerMask entityLayer; //Mobs etc.
@@ -38,6 +36,7 @@ public class Player : EntityGeneric
     bool isInteracting = false;
     int attackInterval = 60;
     int currentAttackInterval = 0;
+	PlayerStats PlayerStats;
 
     // Start is called before the first frame update
     void Start()
@@ -112,13 +111,14 @@ public class Player : EntityGeneric
         // StartCoroutine(myWaitCoroutine(() => gameObject.layer = deathLayer, 1f));
         // gameObject.layer = deathLayer;
         Debug.Log("Player died");
+        PlayerStats.hp = 0;
     }
 
     public float TakeDamage(float dmg, string _type = "hostile")
     {
         float diff = dmg/PlayerStats.damageReductionMultiplier;
-        hp -= diff;
-        if (hp <= 0) Die();
+        PlayerStats.hp -= diff;
+        if (PlayerStats.hp <= 0) Die();
         SpawnDamagePopup(diff, _type);
         return diff;
     }
@@ -156,7 +156,11 @@ public class Player : EntityGeneric
         Collider2D collider = Physics2D.OverlapCircle(pos, 5f, entityLayer);
         if (collider) {
             target = collider.gameObject;
+            PlayerStats.target = target.GetComponent<Entity>();
             chaseTarget = true;
+        }else{
+            target = null;
+            PlayerStats.target = null;
         }
     }
 
@@ -215,11 +219,11 @@ public class Player : EntityGeneric
         if (Input.GetMouseButton(0) && currentClickInterval == 0) 
         {   
             target = null;
+            PlayerStats.target = null;
             chaseTarget = false;
             MoveToTarget();
         } else if (Input.GetMouseButton(1) && currentClickInterval == 0) 
         {   
-            target = null;
             chaseTarget = false;
             AquireTarget();
             MoveToTarget();
