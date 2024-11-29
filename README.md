@@ -3,9 +3,11 @@ Utilizes A* pathfinding algo. Watched this video like 10 times:
 https://www.youtube.com/watch?v=-L-WgKMFuhE&t=1s
 
 <h2>Plan</h2>
+
  - Develop game mechanics from Issue tracker before adding any sprites etc.
 
 <h2>Issue tracker</h2>
+
  - Mobs grant xp
  - Friendly entities
  - UI changes
@@ -25,6 +27,7 @@ https://www.youtube.com/watch?v=-L-WgKMFuhE&t=1s
 
 
 <h2>Future issues</h2>
+
  - Ranged mobs/player
  - Class based abilities
  - World layers (eg dungeons etc.)
