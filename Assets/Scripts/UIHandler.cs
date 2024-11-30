@@ -24,6 +24,9 @@ public class UIHandler : MonoBehaviour
     public Slider xpSlider;
     public Slider manaSlider;
     // Start is called before the first frame update
+    public Color friendlyTarget;
+    public Color hostileTarget;
+    Image targetPanel;
     void Start()
     {
         playerName = _playerName.GetComponent<TextMeshProUGUI>();
@@ -35,6 +38,7 @@ public class UIHandler : MonoBehaviour
         //hpSlider = _playerHpSlider.GetComponent<Slider>();
         //xpSlider = _playerXpSlider.GetComponent<Slider>();
         targetUI.SetActive(false);
+        targetPanel = targetUI.GetComponent<Image>();
         UpdatePlayerUI();
     }
 
@@ -46,11 +50,15 @@ public class UIHandler : MonoBehaviour
 
         hpSlider.value = PlayerStats.hp / PlayerStats.maxHp;
         xpSlider.value = PlayerStats.xp / PlayerStats.xpToNextLvl;
-        Debug.Log((float)(PlayerStats.xp / PlayerStats.xpToNextLvl));
     }
 
     void UpdateTargetUI()
     {
+        if (PlayerStats.target.friendly){
+            targetPanel.color = friendlyTarget;
+        }else{
+            targetPanel.color = hostileTarget;
+        }
         targetName.text = "" + PlayerStats.target.entityName;
         targetHp.text = "" + PlayerStats.target.hp + "/" + PlayerStats.target.maxHp;
         targetLevel.text = "" + PlayerStats.target.level;

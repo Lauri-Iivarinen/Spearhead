@@ -1044,6 +1044,11 @@ MonoBehaviour:
   _targetHp: {fileID: 4954079501291756097}
   _targetLevel: {fileID: 9073235929051100782}
   targetUI: {fileID: 5855200463433998759}
+  hpSlider: {fileID: 0}
+  xpSlider: {fileID: 0}
+  manaSlider: {fileID: 0}
+  friendlyTarget: {r: 0, g: 1, b: 0.38447714, a: 1}
+  hostileTarget: {r: 0.7058824, g: 0.09411765, b: 0, a: 1}
 --- !u!1 &5855200463433998759
 GameObject:
   m_ObjectHideFlags: 0

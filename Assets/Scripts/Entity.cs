@@ -11,7 +11,7 @@ public class Entity : EntityGeneric
     public float damage;
     float currentAttackInterval = 0f;
     public float attackInterval;
-    public int xpReward;
+    public float xpReward;
     public int level;
     public float aggroRange;
     public LayerMask playerLayer;
