@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIHandler : MonoBehaviour
@@ -19,6 +20,9 @@ public class UIHandler : MonoBehaviour
     TextMeshProUGUI targetName;
     TextMeshProUGUI targetHp;
     TextMeshProUGUI targetLevel;
+    public Slider hpSlider;
+    public Slider xpSlider;
+    public Slider manaSlider;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +32,8 @@ public class UIHandler : MonoBehaviour
         targetName = _targetName.GetComponent<TextMeshProUGUI>();
         targetHp = _targetHp.GetComponent<TextMeshProUGUI>();
         targetLevel = _targetLevel.GetComponent<TextMeshProUGUI>();
+        //hpSlider = _playerHpSlider.GetComponent<Slider>();
+        //xpSlider = _playerXpSlider.GetComponent<Slider>();
         targetUI.SetActive(false);
         UpdatePlayerUI();
     }
@@ -37,6 +43,10 @@ public class UIHandler : MonoBehaviour
         playerName.text = "" + PlayerStats.playerName;
         playerLevel.text = "" + PlayerStats.level;
         playerHp.text = "" + PlayerStats.hp + "/" + PlayerStats.maxHp;
+
+        hpSlider.value = PlayerStats.hp / PlayerStats.maxHp;
+        xpSlider.value = PlayerStats.xp / PlayerStats.xpToNextLvl;
+        Debug.Log((float)(PlayerStats.xp / PlayerStats.xpToNextLvl));
     }
 
     void UpdateTargetUI()

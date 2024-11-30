@@ -109,7 +109,7 @@ MonoBehaviour:
   friendly: 0
   damage: 5
   attackInterval: 60
-  xpReward: 0
+  xpReward: 100
   level: 1
   aggroRange: 10
   playerLayer:

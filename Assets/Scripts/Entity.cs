@@ -11,7 +11,7 @@ public class Entity : EntityGeneric
     public float damage;
     float currentAttackInterval = 0f;
     public float attackInterval;
-    public float xpReward;
+    public int xpReward;
     public int level;
     public float aggroRange;
     public LayerMask playerLayer;
@@ -132,6 +132,7 @@ public class Entity : EntityGeneric
         rp.RespawnGameObject(gameObject, (float) respawnTimerSeconds);
         WorldHandler.ChangeEntityStatus(gameObject, false);
         StartCoroutine(myWaitCoroutine( () => gameObject.SetActive(false), 2f));
+        PlayerStats.GainXp(xpReward);
     }
 
     public float TakeDamage(float dmg, string type = "default"){
