@@ -105,6 +105,7 @@ MonoBehaviour:
   maxHp: 200
   hp: 200
   respawnTimerSeconds: 300
+  chatIntro: What a goated day to be spawning on this forsaken island, friend.
   entityName: Plynzo
   friendly: 1
   damage: 1

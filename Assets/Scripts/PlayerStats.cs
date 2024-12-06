@@ -8,6 +8,8 @@ public class PlayerStats
     static float[] xpCaps = { 0, 200, 300, 400, 500, 600 };
     static float[] baseDamagePerLevel = { 0, 6f, 7f, 8f, 9f, 10f };
     static float[] baseMaxHpPerLevel = { 0, 50f, 60f, 65f, 75f, 80f };
+    public static bool interacting = false;
+    public static bool stopInteracting = false;
     //Level specific stuff ends
     public static int level = 1;
     public static float baseDamage {

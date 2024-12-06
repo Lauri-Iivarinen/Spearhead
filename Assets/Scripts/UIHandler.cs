@@ -13,6 +13,7 @@ public class UIHandler : MonoBehaviour
     public GameObject _targetHp;
     public GameObject _targetLevel;
     public GameObject targetUI;
+    public GameObject interactUI;
 
     TextMeshProUGUI playerName;
     TextMeshProUGUI playerLevel;
@@ -40,6 +41,7 @@ public class UIHandler : MonoBehaviour
         targetUI.SetActive(false);
         targetPanel = targetUI.GetComponent<Image>();
         UpdatePlayerUI();
+        interactUI.SetActive(false);
     }
 
     void UpdatePlayerUI()
@@ -74,6 +76,6 @@ public class UIHandler : MonoBehaviour
         }else{
             targetUI.SetActive(false);
         }
-        
+        interactUI.SetActive(PlayerStats.interacting);
     }
 }

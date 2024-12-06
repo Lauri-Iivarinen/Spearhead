@@ -203,11 +203,15 @@ public class Player : EntityGeneric
         // Debug.Log("Made it to Interact");
         Vector3 playerGrid = GridCalculator.GetGridPos(transform.position);
         Vector3 targetGrid = GridCalculator.GetGridPos(target.transform.position);
-        if (!IsWithinRange(playerGrid, targetGrid) && !IsWithinFarRange(playerGrid, targetGrid)) return;
-        
+        if (!IsWithinRange(playerGrid, targetGrid) && !IsWithinFarRange(playerGrid, targetGrid))
+        {
+            PlayerStats.interacting = false;
+            return;
+        }
         Entity tg = target.GetComponent<Entity>();
         if (tg.friendly && !isInteracting) {
             Debug.Log("Interacting");
+            PlayerStats.interacting = true;
         }else if (!tg.friendly) {
             AttackTarget(tg);
         }
@@ -215,14 +219,22 @@ public class Player : EntityGeneric
 
     // Update is called once per frame
     void FixedUpdate()
-    {   
-        if (Input.GetMouseButton(0) && currentClickInterval == 0) 
+    {
+        if (PlayerStats.stopInteracting)
+        {
+            target = null;
+            PlayerStats.target = null;
+            chaseTarget = false;
+            PlayerStats.stopInteracting = false;
+            pathToDestination.Clear();
+        }
+        if (Input.GetMouseButton(0) && currentClickInterval == 0 && !PlayerStats.interacting) 
         {   
             target = null;
             PlayerStats.target = null;
             chaseTarget = false;
             MoveToTarget();
-        } else if (Input.GetMouseButton(1) && currentClickInterval == 0) 
+        } else if (Input.GetMouseButton(1) && currentClickInterval == 0 && !PlayerStats.interacting) 
         {   
             chaseTarget = false;
             AquireTarget();
@@ -233,7 +245,7 @@ public class Player : EntityGeneric
         if (currentAttackInterval > 0) currentAttackInterval++;
         if (currentAttackInterval == attackInterval) currentAttackInterval = 0;
     
-        if (target != null && chaseTarget) CheckTargetInteraction();
+        if (target != null && chaseTarget && !PlayerStats.interacting) CheckTargetInteraction();
         CheckMovement();
     }
 }

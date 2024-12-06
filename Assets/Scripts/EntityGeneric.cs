@@ -10,6 +10,7 @@ public class EntityGeneric : MonoBehaviour
     public float maxHp;
     public float hp;
     public double respawnTimerSeconds;
+    public string chatIntro;
     public bool isAlive {
         get {
             return hp > 0;
